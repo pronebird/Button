@@ -8,6 +8,7 @@
 
 #import "Button.h"
 
+IB_DESIGNABLE
 @interface RoundedButton : Button
 
 @property (nonatomic) IBInspectable CGFloat borderWidth;
