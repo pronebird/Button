@@ -13,5 +13,9 @@ IB_DESIGNABLE
 
 @property (nonatomic) IBInspectable CGFloat borderWidth;
 @property (nonatomic) IBInspectable CGFloat borderRadius;
+@property (nonatomic) IBInspectable UIColor *borderColor;
+
+- (void)setBorderColor:(UIColor *)borderColor forState:(UIControlState)state;
+- (UIColor *)borderColorForState:(UIControlState)state;
 
 @end

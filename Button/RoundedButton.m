@@ -11,6 +11,7 @@
 
 static NSString * RoundedButtonBorderRadiusAttributeKey = @"borderRadius";
 static NSString * RoundedButtonBorderWidthAttributeKey = @"borderWidth";
+static NSString * RoundedButtonBorderColorAttributeKey = @"borderColor";
 
 @implementation RoundedButton
 
@@ -39,16 +40,49 @@ static NSString * RoundedButtonBorderWidthAttributeKey = @"borderWidth";
     return [[self attributeForState:UIControlStateNormal key:RoundedButtonBorderWidthAttributeKey] doubleValue];
 }
 
+- (void)setBorderColor:(UIColor *)borderColor {
+    [self setAttributeForState:UIControlStateNormal key:RoundedButtonBorderColorAttributeKey value:borderColor];
+}
+
+- (UIColor *)borderColor {
+    return [self attributeForState:UIControlStateNormal key:RoundedButtonBorderColorAttributeKey];
+}
+
+- (void)setBorderColor:(UIColor *)borderColor forState:(UIControlState)state {
+    [self setAttributeForState:state key:RoundedButtonBorderColorAttributeKey value:borderColor];
+}
+
+- (UIColor *)borderColorForState:(UIControlState)state {
+    return [self attributeForState:state key:RoundedButtonBorderColorAttributeKey];
+}
+
 - (void)applyAttributesForState:(UIControlState)state {
     [super applyAttributesForState:state];
     
-    UIColor *textColor = [self preferredAttributeForState:state key:ButtonTitleColorAttributeKey];
+    UIColor *borderColor = [self preferredAttributeForState:state key:RoundedButtonBorderColorAttributeKey];
     CGFloat borderWidth = [[self preferredAttributeForState:state key:RoundedButtonBorderWidthAttributeKey] doubleValue];
     CGFloat borderRadius = [[self preferredAttributeForState:state key:RoundedButtonBorderRadiusAttributeKey] doubleValue];
     
-    self.layer.borderColor = textColor.CGColor;
+    /*
+     Use tintColor if borderColor is not set.
+     */
+    if(!borderColor) {
+        borderColor = self.tintColor;
+        
+        if(state & UIControlStateHighlighted) {
+            borderColor = [borderColor colorWithAlphaComponent:0.5];
+        }
+    }
+    
+    self.layer.borderColor = borderColor.CGColor;
     self.layer.borderWidth = borderWidth;
     self.layer.cornerRadius = borderRadius;
+}
+
+- (void)tintColorDidChange {
+    [super tintColorDidChange];
+    
+    [self applyAttributesForState:self.state];
 }
 
 @end
