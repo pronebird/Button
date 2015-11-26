@@ -73,15 +73,17 @@ static void * ButtonImageViewObserverContext = &ButtonImageViewObserverContext;
     self.stackView.translatesAutoresizingMaskIntoConstraints = NO;
     self.stackView.axis = UILayoutConstraintAxisHorizontal;
     self.stackView.alignment = UIStackViewAlignmentCenter;
+    self.stackView.distribution = UIStackViewDistributionFill;
     self.stackView.spacing = 4;
     self.stackView.userInteractionEnabled = NO;
     
     [self addSubview:self.stackView];
     
+    [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-(>=0)-[stack]-(>=0)-|" options:0 metrics:nil views:@{ @"stack": self.stackView }]];
+    
     [self.stackView.topAnchor constraintEqualToAnchor:self.layoutMarginsGuide.topAnchor].active = YES;
-    [self.stackView.leadingAnchor constraintEqualToAnchor:self.layoutMarginsGuide.leadingAnchor].active = YES;
-    [self.stackView.trailingAnchor constraintEqualToAnchor:self.layoutMarginsGuide.trailingAnchor].active = YES;
     [self.stackView.bottomAnchor constraintEqualToAnchor:self.layoutMarginsGuide.bottomAnchor].active = YES;
+    [self.stackView.centerXAnchor constraintEqualToAnchor:self.centerXAnchor].active = YES;
     
     [self.imageView addObserver:self forKeyPath:@"image" options:(NSKeyValueObservingOptionNew | NSKeyValueObservingOptionInitial) context:ButtonImageViewObserverContext];
 }
@@ -93,6 +95,14 @@ static void * ButtonImageViewObserverContext = &ButtonImageViewObserverContext;
     @catch (NSException *exception) {
         
     }
+}
+
+- (UIView *)viewForFirstBaselineLayout {
+    return self.titleLabel;
+}
+
+- (UIView *)viewForLastBaselineLayout {
+    return self.titleLabel;
 }
 
 #pragma mark - Key Value Observer
@@ -141,11 +151,11 @@ static void * ButtonImageViewObserverContext = &ButtonImageViewObserverContext;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         attributeTable = @{
-            @(UIControlStateNormal): @[ @(UIControlStateNormal) ],
-            @(UIControlStateHighlighted): @[ @(UIControlStateHighlighted), @(UIControlStateNormal) ],
-            @(UIControlStateSelected): @[ @(UIControlStateSelected), @(UIControlStateHighlighted), @(UIControlStateNormal) ],
-            @(UIControlStateDisabled): @[ @(UIControlStateDisabled), @(UIControlStateNormal) ]
-        };
+                           @(UIControlStateNormal): @[ @(UIControlStateNormal) ],
+                           @(UIControlStateHighlighted): @[ @(UIControlStateHighlighted), @(UIControlStateNormal) ],
+                           @(UIControlStateSelected): @[ @(UIControlStateSelected), @(UIControlStateHighlighted), @(UIControlStateNormal) ],
+                           @(UIControlStateDisabled): @[ @(UIControlStateDisabled), @(UIControlStateNormal) ]
+                           };
     });
     
     NSArray *stateOrder = attributeTable[@(state)];
@@ -191,10 +201,10 @@ static void * ButtonImageViewObserverContext = &ButtonImageViewObserverContext;
 
 - (void)applyAttributesForState:(UIControlState)state animated:(BOOL)animated {
     UIViewAnimationOptions options = (
-        UIViewAnimationOptionCurveEaseInOut |
-        UIViewAnimationOptionTransitionCrossDissolve |
-        UIViewAnimationOptionBeginFromCurrentState |
-        UIViewAnimationOptionAllowUserInteraction);
+                                      UIViewAnimationOptionCurveEaseInOut |
+                                      UIViewAnimationOptionTransitionCrossDissolve |
+                                      UIViewAnimationOptionBeginFromCurrentState |
+                                      UIViewAnimationOptionAllowUserInteraction);
     
     void(^animations)() = ^{
         [self applyAttributesForState:self.state];
@@ -279,6 +289,14 @@ static void * ButtonImageViewObserverContext = &ButtonImageViewObserverContext;
 
 - (UIImage *)image {
     return [self imageForState:UIControlStateNormal];
+}
+
+- (void)setFont:(UIFont *)font {
+    self.titleLabel.font = font;
+}
+
+- (UIFont *)font {
+    return self.titleLabel.font;
 }
 
 #pragma mark - Accessors

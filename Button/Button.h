@@ -19,6 +19,7 @@ IB_DESIGNABLE
 @property (nonatomic) IBInspectable UIColor *titleHighlightedColor;
 @property (nonatomic) IBInspectable UIColor *titleDisabledColor;
 @property (nonatomic) IBInspectable UIImage *image;
+@property (nonatomic) IBInspectable UIFont *font;
 
 @property(nonatomic,getter=isEnabled) IBInspectable BOOL enabled;
 
